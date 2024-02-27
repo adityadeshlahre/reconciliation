@@ -7,9 +7,19 @@
   </head>
   <body>
     <div id="mainArea"></div>
+    <br />
+    <input type="text" id="idInput" placeholder="EnterIDWhereToMakeChanges" />
+    <br />
+    <br />
+    <input type="text" id="titleInput" placeholder="New Title" />
+    <button id="changeTitle">Change Title</button>
+    <br />
+    <br />
+    <input type="text" id="descriptionInput" placeholder="New description" />
+    <button id="changeDescription">Change Description</button>
 
     <script>
-      let currentTodos = []; // Keep track of existing todos
+      let currentTodos = [];
 
       function deleteTodo(id) {
         console.log(id);
@@ -19,6 +29,20 @@
           parentElement.removeChild(element);
           // Update the currentTodos array after removing the todo
           currentTodos = currentTodos.filter((todo) => todo.id !== id);
+        }
+      }
+
+      function updateTodoElement(element) {
+        const existingElement = document.querySelector(
+          `[data-id="${element.id}"]`
+        );
+        if (existingElement) {
+          // Update the existing todo element
+          const titleElement = existingElement.querySelector(".title");
+          const descriptionElement =
+            existingElement.querySelector(".description");
+          titleElement.innerHTML = `${element.title} | `;
+          descriptionElement.innerHTML = `${element.description} | `;
         }
       }
 
@@ -55,9 +79,11 @@
 
             const titleElement = document.createElement("span");
             titleElement.textContent = `${element.title} | `;
+            titleElement.classList.add("title");
 
             const descriptionElement = document.createElement("span");
             descriptionElement.textContent = `${element.description} | `;
+            descriptionElement.classList.add("description");
 
             const delbutton = document.createElement("button");
             delbutton.setAttribute("onclick", `deleteTodo(${element.id})`);
@@ -69,6 +95,9 @@
             childElement.appendChild(delbutton);
 
             parentElement.appendChild(childElement);
+          } else {
+            // Update existing todos if they are changed
+            updateTodoElement(element);
           }
         });
 
@@ -76,20 +105,51 @@
         currentTodos = todos.slice();
       }
 
+      document
+        .getElementById("changeTitle")
+        .addEventListener("click", function () {
+          const id = parseInt(document.getElementById("idInput").value);
+          const newTitle = document.getElementById("titleInput").value;
+          if (newTitle) {
+            const todoToUpdate = currentTodos.find((todo) => todo.id === id);
+            if (todoToUpdate) {
+              todoToUpdate.title = newTitle;
+              updateTodoElement(todoToUpdate);
+            }
+          }
+        });
+
+      document
+        .getElementById("changeDescription")
+        .addEventListener("click", function () {
+          const id = parseInt(document.getElementById("idInput").value);
+          const newDescription =
+            document.getElementById("descriptionInput").value;
+          if (newDescription) {
+            const todoToUpdate = currentTodos.find((todo) => todo.id === id);
+            if (todoToUpdate) {
+              todoToUpdate.description = newDescription;
+              updateTodoElement(todoToUpdate);
+            }
+          }
+        });
+
       window.setInterval(function () {
+        // [ automated one to see rerenders ]
         // let todos = [];
         // for (let i = 0; i < Math.floor(Math.random() * 100); i++) {
         //   todos.push({
         //     title: "Gyming",
-        //     description: "Go to gym at 7",
+        //     description: "Go to gym at your time",
         //     id: i + 1,
         //   });
         // }
 
+        // [ manual one to see the diff/change propogations on the dom ]
         let todos = [
           {
             id: 1,
-            title: "gym",
+            title: "gym12312313",
             description: "gyming",
           },
           {
@@ -105,7 +165,7 @@
         ];
 
         createDomElements(todos);
-      }, 1000);
+      }, 3000);
     </script>
   </body>
 </html>
