@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reconciliation</title>
+  </head>
+  <body>
+    <div id="mainArea"></div>
+
+    <script>
+      let currentTodos = []; // Keep track of existing todos
+
+      function deleteTodo(id) {
+        console.log(id);
+        const parentElement = document.querySelector("#mainArea");
+        const element = document.querySelector(`[data-id="${id}"]`);
+        if (element && element.parentNode) {
+          parentElement.removeChild(element);
+          // Update the currentTodos array after removing the todo
+          currentTodos = currentTodos.filter((todo) => todo.id !== id);
+        }
+      }
+
+      function createDomElements(todos) {
+        const parentElement = document.querySelector("#mainArea");
+
+        // Remove todos that are not present in the new list
+        currentTodos.forEach((todo) => {
+          const existsInNewList = todos.some(
+            (newTodo) => newTodo.id === todo.id
+          );
+          if (!existsInNewList) {
+            const elementToRemove = document.querySelector(
+              `[data-id="${todo.id}"]`
+            );
+            if (elementToRemove) {
+              parentElement.removeChild(elementToRemove);
+            }
+          }
+        });
+
+        // Add new todos that are not present in the current list
+        todos.forEach((element) => {
+          const existsInCurrentList = currentTodos.some(
+            (todo) => todo.id === element.id
+          );
+          if (!existsInCurrentList) {
+            const childElement = document.createElement("div");
+            childElement.setAttribute("class", "childClass");
+            childElement.setAttribute("data-id", element.id);
+
+            const idElement = document.createElement("span");
+            idElement.textContent = `ID: ${element.id} | `;
+
+            const titleElement = document.createElement("span");
+            titleElement.textContent = `${element.title} | `;
+
+            const descriptionElement = document.createElement("span");
+            descriptionElement.textContent = `${element.description} | `;
+
+            const delbutton = document.createElement("button");
+            delbutton.setAttribute("onclick", `deleteTodo(${element.id})`);
+            delbutton.textContent = "Delete";
+
+            childElement.appendChild(idElement);
+            childElement.appendChild(titleElement);
+            childElement.appendChild(descriptionElement);
+            childElement.appendChild(delbutton);
+
+            parentElement.appendChild(childElement);
+          }
+        });
+
+        // Update currentTodos with the new todos list
+        currentTodos = todos.slice();
+      }
+
+      window.setInterval(function () {
+        // let todos = [];
+        // for (let i = 0; i < Math.floor(Math.random() * 100); i++) {
+        //   todos.push({
+        //     title: "Gyming",
+        //     description: "Go to gym at 7",
+        //     id: i + 1,
+        //   });
+        // }
+
+        let todos = [
+          {
+            id: 1,
+            title: "gym",
+            description: "gyming",
+          },
+          {
+            id: 2,
+            title: "gymm",
+            description: "gymingggmgm",
+          },
+          {
+            id: 3,
+            title: "gymmgmgm",
+            description: "gyminggmgmgm",
+          },
+        ];
+
+        createDomElements(todos);
+      }, 1000);
+    </script>
+  </body>
+</html>
